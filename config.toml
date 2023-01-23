@@ -1,0 +1,12 @@
+accounts = [
+    [
+        "Account 1",
+        "ricky2716",
+    ],
+    [
+        "Account 2",
+        "iospammoaccountacasissimo",
+    ],
+]
+#You can add as many accounts as you want just
+#make sure you add both the parenthesis and all three commas
