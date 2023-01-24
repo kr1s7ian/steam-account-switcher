@@ -1,6 +1,7 @@
 import os
 import sys
 import toml
+from keylistener import KeyListener
 
 '''Closes the steam process using taskkill'''
 
@@ -27,6 +28,19 @@ def login_steam(account_index):
         F'reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d '+username+' /f')
     os.system(
         F'reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f')
+
+
+def terminate_app():
+    os._exit(0)
+
+
+def open_steam_in_account(account_index, quit_on_switch):
+    kill_steam()
+    login_steam(account_index)
+    open_steam()
+
+    if quit_on_switch:
+        terminate_app()
 
 
 '''Config class that contains all config related logic and variables'''
@@ -104,3 +118,4 @@ class Config:
 
 
 config = Config()
+keylistener = KeyListener()

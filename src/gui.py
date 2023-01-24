@@ -6,16 +6,8 @@ from lib import config
 
 
 class Gui(ck.CTk):
-    def close_app(self):
-        os._exit(0)
-
     def account_button_click(self, account_index):
-        lib.kill_steam()
-        lib.login_steam(account_index)
-        lib.open_steam()
-
-        if self.close_on_switch.get():
-            self.close_app()
+        lib.open_steam_in_account(account_index, self.close_on_switch.get())
 
     def account_button_right_click(self, account_index, event):
         lib.config.remove_account(account_index)
@@ -41,10 +33,14 @@ class Gui(ck.CTk):
     '''Prompts the user with a dialog asking Username and Title, returns a tuple containg (title, username)'''
 
     def new_account_dialog(self):
+        lib.keylistener.stop()
+
         username_dialog = ck.CTkInputDialog(text="Insert Account Username")
         username = username_dialog.get_input()
         title_dialog = ck.CTkInputDialog(text="Insert Account Title")
         title = title_dialog.get_input()
+
+        lib.keylistener.start()
         return (title, username)
 
     def reload_app(self):
