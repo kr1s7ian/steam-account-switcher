@@ -29,24 +29,23 @@ class Gui(ck.CTk):
             self.button.bind("<ButtonRelease-3>",
                              command=right_click_callback)
             self.button.pack(padx=5, pady=5)
-        return self.accounts_frame
 
     '''Prompts the user with a dialog asking Username and Title, returns a tuple containg (title, username)'''
 
     def new_account_dialog(self):
         lib.keylistener.stop()
 
-        username_dialog = ck.CTkInputDialog(text="Insert Account Username")
+        username_dialog = ck.CTkInputDialog(text="Insert Account Username", title='Add Account')
         username = username_dialog.get_input()
-        title_dialog = ck.CTkInputDialog(text="Insert Account Title")
+        title_dialog = ck.CTkInputDialog(text="Insert Account Title", title='Add Account')
         title = title_dialog.get_input()
 
         lib.keylistener.start()
         return (title, username)
 
     def reload_app(self):
-        self.accounts_frame.destroy()
-        self.accounts_frame = self.create_accounts_frame()
+        self.destroy()
+        Gui()
 
     def add_account_button_press(self):
         print("adding new account")
@@ -72,12 +71,13 @@ class Gui(ck.CTk):
         self.bg = ck.CTkFrame(self)
         self.bg.pack(padx=15, pady=15, fill="both", expand=True)
 
-        self.label = ck.CTkLabel(
-            master=self.bg, text='Steam Account Switcher', font=('Arialbd', 40))
+        self.label = ck.CTkLabel(master=self.bg, text='Steam Account Switcher', font=('Arialbd',40))
         self.label.pack(padx=10, pady=10)
+
 
         self.frame = ck.CTkFrame(self.bg)
         self.frame.pack(padx=5, pady=15)
+        
 
         self.close_on_switch = ck.CTkSwitch(
             self.frame, text='Close on switch')
