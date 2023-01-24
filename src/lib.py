@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import toml
 from keylistener import KeyListener
@@ -24,10 +25,10 @@ def login_steam(account_index):
     global config
     username = config.get_account_usernames()[account_index]
     print("logging in " + username + " steam account")
-    os.system(
-        F'reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d '+username+' /f')
-    os.system(
-        F'reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f')
+    subprocess.run(
+        F'reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d '+username+' /f', capture_output=False, text=False)
+    subprocess.run(
+        F'reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f', capture_output=False, text=False)
 
 
 '''Closes all processes related to the app'''
