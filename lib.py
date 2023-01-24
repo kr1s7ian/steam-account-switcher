@@ -33,18 +33,18 @@ def login_steam(account_index):
 
 
 class Config:
-    def load_config(self):
+    def load(self):
         with open(self.config_path, 'r') as f:
             return toml.load(f)
 
-    def save_config(self):
+    def save(self):
         with open(self.config_path, 'w') as f:
             toml.dump(self.data, f)
 
     def __init__(self):
         self.accounts_key = 'accounts'
         self.config_path = "config.toml"
-        self.data = self.load_config()
+        self.data = self.load()
 
     '''Returns all accounts (an array of a list which contains account usernames and titles)'''
 
@@ -68,6 +68,27 @@ class Config:
             # index 0 is titles, index 1 is usernames
             titles.append(account[0])
         return titles
+
+    def get_account(self, index):
+        return self.data[self.accounts_key][index]
+
+    def get_account_title(self, index):
+        return self.data[self.accounts_key][index][0]
+
+    def get_account_username(self, index):
+        return self.data[self.accounts_key][index][1]
+
+    def set_account_title(self, index, new_title):
+        self.data[self.accounts_key][index][0] = new_title
+
+    def set_account_username(self, index, new_username):
+        self.data[self.accounts_key][index][1] = new_username
+
+    def add_account(self, title, username):
+        self.data[self.accounts_key].append([title, username])
+
+    def remove_account(self, account_index):
+        del self.data[self.accounts_key][account_index]
 
 
 config = Config()

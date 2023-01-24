@@ -1,1 +1,1 @@
-accounts = [ [ "Title1", "Username1",], [ "Title2", "Username2",],]
+accounts = [["Title1", "Username1"], ["Title2", "Username2"]]
