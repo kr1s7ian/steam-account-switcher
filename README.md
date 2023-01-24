@@ -10,4 +10,5 @@ How To Use:
 - Right clicking an account button will delete that entry.
 - You can use keyboard keys 1 to 9 to log in in the respective accounts.
 
+Other:
 - Feel free to submit feedback in the issues tab, even if you feel its a minor detail or opinion or if you have any problems:
