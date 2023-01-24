@@ -1,14 +1,21 @@
 import customtkinter as ck
 from functools import partial
+import os
 import lib
 from lib import config
 
 
 class Gui(ck.CTk):
+    def close_app(self):
+        os._exit(0)
+
     def account_button_click(self, account_index):
         lib.kill_steam()
         lib.login_steam(account_index)
         lib.open_steam()
+
+        if self.close_on_switch.get():
+            self.close_app()
 
     def account_button_right_click(self, account_index, event):
         lib.config.remove_account(account_index)
@@ -67,6 +74,12 @@ class Gui(ck.CTk):
 
         self.frame = ck.CTkFrame(self)
         self.frame.pack(padx=5, pady=5)
+
+        self.close_on_switch = ck.CTkSwitch(
+            self.frame, text='Close on switch')
+        self.close_on_switch.pack(padx=5, pady=5)
+        self.close_on_switch.toggle()
+
         self.add_account_button = ck.CTkButton(
             self.frame, text="+", command=self.add_account_button_press)
         self.add_account_button.pack(padx=5, pady=5)
