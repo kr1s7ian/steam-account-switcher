@@ -1,11 +1,7 @@
 accounts = [
     [
-        "Account 1",
-        "ricky2716",
-    ],
-    [
-        "Account 2",
-        "iospammoaccountacasissimo",
+        "title1",
+        "username1",
     ],
 ]
 #You can add as many accounts as you want just
