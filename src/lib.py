@@ -41,10 +41,21 @@ class Config:
         with open(self.config_path, 'w') as f:
             toml.dump(self.data, f)
 
+    def create_config_file(self):
+        with open(self.config_path, 'w') as f:
+            empty_config = self.accounts_key + \
+                R'= [["title1", "username1"]]'
+            f.write(empty_config)
+            f.close()
+
     def __init__(self):
         self.accounts_key = 'accounts'
         self.config_path = "config.toml"
-        self.data = self.load()
+        try:
+            self.data = self.load()
+        except:
+            self.create_config_file()
+            self.data = self.load()
 
     '''Returns all accounts (an array of a list which contains account usernames and titles)'''
 

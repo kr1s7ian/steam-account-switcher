@@ -38,7 +38,6 @@ class Gui(ck.CTk):
         username = username_dialog.get_input()
         title_dialog = ck.CTkInputDialog(text="Insert Account Title")
         title = title_dialog.get_input()
-
         return (title, username)
 
     def reload_app(self):
