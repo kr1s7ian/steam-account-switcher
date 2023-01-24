@@ -34,6 +34,7 @@ def login_steam(account_index):
 
 
 def terminate_app():
+    keylistener.stop()
     os._exit(0)
 
 

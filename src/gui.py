@@ -15,7 +15,7 @@ class Gui(ck.CTk):
         self.reload_app()
 
     def create_accounts_frame(self):
-        self.accounts_frame = ck.CTkFrame(self)
+        self.accounts_frame = ck.CTkFrame(self.bg)
         self.accounts_frame.pack(padx=5, pady=5)
 
         for (account_index, account_title) in enumerate(config.get_account_titles()):
@@ -68,8 +68,16 @@ class Gui(ck.CTk):
         self.geometry("600x500")
         self.resizable(0, 0)
 
-        self.frame = ck.CTkFrame(self)
-        self.frame.pack(padx=5, pady=5)
+        self.bg = ck.CTkFrame(self)
+        self.bg.pack(padx=15, pady=15, fill="both", expand=True)
+
+        self.label = ck.CTkLabel(master=self.bg, text='Steam Account Switcher', font=('Arialbd',40))
+        self.label.pack(padx=10, pady=10)
+
+
+        self.frame = ck.CTkFrame(self.bg)
+        self.frame.pack(padx=5, pady=15)
+        
 
         self.close_on_switch = ck.CTkSwitch(
             self.frame, text='Close on switch')
@@ -83,3 +91,4 @@ class Gui(ck.CTk):
         self.accounts_frame = self.create_accounts_frame()
 
         self.mainloop()
+        lib.terminate_app()
