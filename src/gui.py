@@ -5,7 +5,8 @@ import lib
 from lib import config
 
 ck.set_appearance_mode("dark")
-ck.set_default_color_theme("Assets\Theme.json")
+# ck.set_default_color_theme("Assets\Theme.json")
+
 
 class Gui(ck.CTk):
     def account_button_click(self, account_index):
@@ -31,17 +32,20 @@ class Gui(ck.CTk):
             self.button.bind("<ButtonRelease-3>",
                              command=right_click_callback)
             self.button.pack(padx=5, pady=5)
+        return self.accounts_frame
 
     '''Prompts the user with a dialog asking Username and Title, returns a tuple containg (title, username)'''
 
     def new_account_dialog(self):
         lib.keylistener.stop()
 
-        username_dialog = ck.CTkInputDialog(text="Insert Account Username", title='Add Account')
+        username_dialog = ck.CTkInputDialog(
+            text="Insert Account Username", title='Add Account')
         username = username_dialog.get_input()
         if username == None:
             return None
-        title_dialog = ck.CTkInputDialog(text="Insert Account Title", title='Add Account')
+        title_dialog = ck.CTkInputDialog(
+            text="Insert Account Title", title='Add Account')
         title = title_dialog.get_input()
         if title == None:
             return None
@@ -50,8 +54,8 @@ class Gui(ck.CTk):
         return (title, username)
 
     def reload_app(self):
-        self.destroy()
-        Gui()
+        self.accounts_frame.destroy()
+        self.acoounts_frame = self.create_accounts_frame()
 
     def add_account_button_press(self):
         print("adding new account")
@@ -72,7 +76,7 @@ class Gui(ck.CTk):
 
     def __init__(self):
         super().__init__()
-        self.wm_iconbitmap("Assets\Icon.ico")
+        # self.wm_iconbitmap("Assets\Icon.ico")
         self.title("Steam Account Switcher")
         self.geometry("600x500")
         self.resizable(0, 0)
@@ -80,13 +84,12 @@ class Gui(ck.CTk):
         self.bg = ck.CTkFrame(self)
         self.bg.pack(padx=15, pady=15, fill="both", expand=True)
 
-        self.label = ck.CTkLabel(master=self.bg, text='Steam Account Switcher', font=('Arialbd',40))
+        self.label = ck.CTkLabel(
+            master=self.bg, text='Steam Account Switcher', font=('Arialbd', 40))
         self.label.pack(padx=10, pady=10)
-
 
         self.frame = ck.CTkFrame(self.bg)
         self.frame.pack(padx=5, pady=15)
-        
 
         self.close_on_switch = ck.CTkSwitch(
             self.frame, text='Close on switch')
