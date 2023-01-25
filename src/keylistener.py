@@ -4,6 +4,9 @@ import threading
 
 
 class KeyListener:
+    def kill(self):
+        self.thread.join(0)
+        
     def on_press(self, key):
         if not self.enabled:
             return

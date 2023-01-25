@@ -4,6 +4,8 @@ import os
 import lib
 from lib import config
 
+ck.set_appearance_mode("dark")
+ck.set_default_color_theme("Assets\Theme.json")
 
 class Gui(ck.CTk):
     def account_button_click(self, account_index):
@@ -37,8 +39,12 @@ class Gui(ck.CTk):
 
         username_dialog = ck.CTkInputDialog(text="Insert Account Username", title='Add Account')
         username = username_dialog.get_input()
+        if username == None:
+            return None
         title_dialog = ck.CTkInputDialog(text="Insert Account Title", title='Add Account')
         title = title_dialog.get_input()
+        if title == None:
+            return None
 
         lib.keylistener.start()
         return (title, username)
@@ -50,6 +56,8 @@ class Gui(ck.CTk):
     def add_account_button_press(self):
         print("adding new account")
         account_data = self.new_account_dialog()
+        if account_data == None:
+            return
         title = account_data[0]
         username = account_data[1]
 
@@ -64,6 +72,7 @@ class Gui(ck.CTk):
 
     def __init__(self):
         super().__init__()
+        self.wm_iconbitmap("Assets\Icon.ico")
         self.title("Steam Account Switcher")
         self.geometry("600x500")
         self.resizable(0, 0)
