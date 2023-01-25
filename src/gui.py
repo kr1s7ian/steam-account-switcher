@@ -92,7 +92,7 @@ class Gui(ck.CTk):
         self.frame.pack(padx=5, pady=15)
 
         self.close_on_switch = ck.CTkSwitch(
-            self.frame, text='Close on switch')
+            self.frame, text='Close on switch', progress_color=("#326da8", "#326da8"))
         self.close_on_switch.pack(padx=5, pady=5)
         self.close_on_switch.toggle()
 

@@ -9,14 +9,14 @@ from keylistener import KeyListener
 
 
 def kill_steam():
-    subprocess.run("taskkill.exe /F /IM steam.exe", capture_output=False)
+    subprocess.run(["taskkill.exe","/F","/IM","steam.exe"], capture_output=False, shell=True)
 
 
 '''Open steam process using start'''
 
 
 def open_steam():
-    subprocess.run("start steam://open/main", capture_output=False)
+    subprocess.run(["start","steam://open/main"], capture_output=False, shell=True)
 
 
 '''Login in steam account with username parameter using registers red add'''
@@ -26,10 +26,9 @@ def login_steam(account_index):
     global config
     username = config.get_account_usernames()[account_index]
     print("logging in " + username + " steam account")
-    subprocess.run(
-        F'reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d '+username+' /f', capture_output=false)
-    subprocess.run(
-        F'reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f', capture_output=False)
+    username_param = '"%{}%"'.format(username)
+    subprocess.run(['reg','add','"HKCU\Software\Valve\Steam"','/v','AutoLoginUser','/t','REG_SZ','/d',username_param,'/f'],capture_output=False, shell=True)
+    subprocess.run(['reg','add','"HKCU\Software\Valve\Steam"','/v','RememberPassword','/t','REG_DWORD','/d','1','/f'],capture_output=False, shell=True)
 
 
 '''Closes all processes related to the app'''
