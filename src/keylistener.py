@@ -21,7 +21,7 @@ class KeyListener:
         if pressed_index > len(lib.config.get_accounts()):
             return
 
-        lib.open_steam_in_account(pressed_index-1, True)
+        lib.open_steam_in_account(pressed_index-1)
 
     def listen(self):
         with keyboard.Listener(on_press=self.on_press) as listener:
