@@ -5,7 +5,7 @@ import lib
 from lib import config
 
 ck.set_appearance_mode("dark")
-ck.set_default_color_theme("Assets\Theme.json")
+ck.set_default_color_theme('Assets/Theme.json')
 
 
 class Gui(ck.CTk):
@@ -76,7 +76,7 @@ class Gui(ck.CTk):
 
     def __init__(self):
         super().__init__()
-        self.wm_iconbitmap("Assets\Icon.ico")
+        # self.wm_iconbitmap('Assets/Icon.ico')
         self.title("Steam Account Switcher")
         self.geometry("600x500")
         self.resizable(0, 0)
@@ -101,6 +101,9 @@ class Gui(ck.CTk):
         self.add_account_button.pack(padx=5, pady=5)
 
         self.accounts_frame = self.create_accounts_frame()
+
+        self.bind("Unmap", lambda _: keylistener.stop())
+        self.bind("Map", lambda _: keylistener.start())
 
         self.mainloop()
         lib.terminate_app()
