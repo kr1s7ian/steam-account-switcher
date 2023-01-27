@@ -5,7 +5,7 @@ Idea of the tool, and functionality of the account switching mechanics by pog
 #5249, python code and implementation of UI made by me.
 
 Ignore if using releases:
--If you are cloning and running with python, customtkinter has a known bug with the CTkInputDialog, it shold return None when pressing cancel but the command parameter is set to the same one for the ok button, for more details on how to the issue go here https://github.com/TomSchimansky/CustomTkinter/pull/853/commits/d43cc3d6112c77db7742156198b2014ce5f56058 
+- If you are cloning and running with python, customtkinter has a known bug with the CTkInputDialog, it shold return None when pressing cancel but the command parameter is set to the same one for the ok button, for more details on how to the issue go here https://github.com/TomSchimansky/CustomTkinter/pull/853/commits/d43cc3d6112c77db7742156198b2014ce5f56058 
 
 How To Use:
 - Pressing the plus button prompts the user for a new username along with a new title, the title is the text shown on the buttons, and username is the username of the steam account the button will log into.
