@@ -17,7 +17,8 @@ def kill_steam():
 
 
 def open_steam():
-    subprocess.call("start steam://open/main",creationflags=subprocess.DETACHED_PROCESS, shell=True)
+    subprocess.call("start steam://open/main",
+                    creationflags=subprocess.DETACHED_PROCESS, shell=True)
 
 
 '''Login in steam account with username parameter using registers red add'''
@@ -27,8 +28,10 @@ def login_steam(account_index):
     global config
     username = config.get_account_usernames()[account_index]
     print("logging in " + username + " steam account")
-    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d ' +username+ ' /f', creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
-    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f', creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
+    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d ' +
+                    username + ' /f', creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
+    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f',
+                    creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
 
 
 '''Closes all processes related to the app'''
@@ -43,12 +46,12 @@ def terminate_app():
 a bool that decides if the app should be closed after the account switch'''
 
 
-def open_steam_in_account(account_index, quit_on_switch):
+def open_steam_in_account(account_index):
     kill_steam()
     login_steam(account_index)
     open_steam()
 
-    if quit_on_switch:
+    if config.get_close_on_switch():
         terminate_app()
 
 
@@ -72,7 +75,7 @@ class Config:
     def create_config_file(self):
         with open(self.config_path, 'w') as f:
             empty_config = self.accounts_key + \
-                R'= [["title1", "username1"]]'
+                '=[["title1", "username1"]] \ncloseOnSwitch=true'
             f.write(empty_config)
             f.close()
 
@@ -84,6 +87,15 @@ class Config:
         except:
             self.create_config_file()
             self.data = self.load()
+
+    def get_close_on_switch(self):
+        return self.data["closeOnSwitch"]
+
+    def toggle_close_on_switch(self):
+        self.set_close_on_switch(not self.get_close_on_switch())
+
+    def set_close_on_switch(self, new_value):
+        self.data["closeOnSwitch"] = new_value
 
     '''Returns all accounts (an array of a list which contains account usernames and titles)'''
 
