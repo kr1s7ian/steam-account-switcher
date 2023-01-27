@@ -102,8 +102,8 @@ class Gui(ck.CTk):
 
         self.accounts_frame = self.create_accounts_frame()
 
-        self.bind("Unmap", lambda _: keylistener.stop())
-        self.bind("Map", lambda _: keylistener.start())
+        self.bind("<Unmap>", lambda _: keylistener.stop())
+        self.bind("<Map>", lambda _: keylistener.start())
 
         self.mainloop()
         lib.terminate_app()
