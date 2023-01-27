@@ -9,8 +9,13 @@ ck.set_default_color_theme('Assets/Theme.json')
 
 
 class Gui(ck.CTk):
+
+    def close_on_switch(self):
+        config.set_close_on_switch(not config.get_close_on_switch())
+        config.save()
+
     def account_button_click(self, account_index):
-        lib.open_steam_in_account(account_index, self.close_on_switch.get())
+        lib.open_steam_in_account(account_index)
 
     def account_button_right_click(self, account_index, event):
         lib.config.remove_account(account_index)
@@ -92,9 +97,10 @@ class Gui(ck.CTk):
         self.frame.pack(padx=5, pady=15)
 
         self.close_on_switch = ck.CTkSwitch(
-            self.frame, text='Close on switch', progress_color=("#326da8", "#326da8"))
+            self.frame, text='Close on switch', progress_color=("#326da8", "#326da8"), command=self.close_on_switch)
         self.close_on_switch.pack(padx=5, pady=5)
-        self.close_on_switch.toggle()
+        if config.get_close_on_switch():
+            self.close_on_switch.select()
 
         self.add_account_button = ck.CTkButton(
             self.frame, text="+", command=self.add_account_button_press)
