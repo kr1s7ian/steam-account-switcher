@@ -24,7 +24,7 @@ class AccountBox(ck.CTkFrame):
         self.self.button.unbind(sequence, None)
 
     def __init__(self, *args,
-                 image: ck.CTkImage = None,
+                 image_path: str = None,
                  title: str,
                  height: int,
                  width: int,
@@ -32,11 +32,11 @@ class AccountBox(ck.CTkFrame):
                  avatar_size: int,
                  ** kwargs):
         super().__init__(*args, width=width, height=height, **kwargs)
-        if image == None:
+        if image_path == None:
             self.avatar_image = get_placeholder_image(avatar_size)
         else:
-            self.avatar_image = image.configure(
-                size=(avatar_size, avatar_size))
+            self.avatar_image = ck.CTkImage(
+                Image.open(image_path), size=(avatar_size, avatar_size))
 
         self.avatar = ck.CTkLabel(self, image=self.avatar_image, text="")
         self.avatar.grid(padx=5, pady=5, row=0, column=0)
