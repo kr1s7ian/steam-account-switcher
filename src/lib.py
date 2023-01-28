@@ -3,6 +3,8 @@ import sys
 import toml
 import subprocess
 import threading
+import requests
+from bs4 import BeautifulSoup
 import vdf
 import winreg
 from keylistener import KeyListener
@@ -136,6 +138,11 @@ class Config:
     def get_account_username(self, index):
         return self.data[self.accounts_key][index][1]
 
+    '''Returns account steamid specified by the account_index from the config file'''
+
+    def get_account_steamid(self, index):
+        return self.data[self.accounts_key][index][2]
+
     '''Sets account title specified by the account_index to new_title'''
 
     def set_account_title(self, index, new_title):
@@ -149,8 +156,8 @@ class Config:
     '''Appends a new account object to the config with title and username as its values.
      Returns index of newly added account'''
 
-    def add_account(self, title, username):
-        self.data[self.accounts_key].append([title, username])
+    def add_account(self, title, username, steamid):
+        self.data[self.accounts_key].append([title, username, steamid])
         return len(self.get_accounts()) - 1
 
     '''Removes account specified by account_index from the config'''
@@ -163,6 +170,9 @@ class Config:
 
 
 class Steam:
+    def __init__(self):
+        self.account_avatars_path = 'Assets/account_avatars'
+
     def get_steam_path(self):
         steam_path = ''
         try:
@@ -200,6 +210,31 @@ class Steam:
             account_steamids.append(steamid)
         return account_steamids
 
+    def get_user_avatar_url(self, steamid):
+        with requests.get('https://steamcommunity.com/profiles/{}'.format(steamid)) as r:
+            steam_page = BeautifulSoup(r.content, features="html.parser")
+        images = steam_page.find(
+            'div', attrs={"class": 'playerAvatarAutoSizeInner'})
+        profile_picture = images.findAll('img')[1]['src']
+        return profile_picture
+
+    def download_user_avatar(self, steamid, output):
+        avatar_url = self.get_user_avatar_url(steamid)
+        avatar_data = requests.get(avatar_url).content
+
+        with open(output, 'wb') as handler:
+            handler.write(avatar_data)
+
+    def get_user_avatar_path(self, steamid):
+        user_avatar_path = os.path.join(
+            self.account_avatars_path, steamid,).replace('/', '\\') + ".jpg"
+        if os.path.exists(user_avatar_path):
+            return user_avatar_path
+        else:
+            self.download_user_avatar(steamid, user_avatar_path)
+        return user_avatar_path
+
 
 config = Config()
+steam = Steam()
 keylistener = KeyListener()
