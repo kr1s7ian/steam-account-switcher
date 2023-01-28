@@ -81,7 +81,7 @@ class Gui(ck.CTk):
 
     def __init__(self):
         super().__init__()
-        # self.wm_iconbitmap('Assets/Icon.ico')
+        self.wm_iconbitmap('Assets/Icon.ico')
         self.title("Steam Account Switcher")
         self.geometry("600x500")
         self.resizable(0, 0)
