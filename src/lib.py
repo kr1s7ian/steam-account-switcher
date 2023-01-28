@@ -3,6 +3,8 @@ import sys
 import toml
 import subprocess
 import threading
+import vdf
+import winreg
 from keylistener import KeyListener
 
 '''Closes the steam process using taskkill'''
@@ -42,7 +44,7 @@ def terminate_app():
     os._exit(0)
 
 
-'''Opens steam in the steam account specified by account index, quit_on_switch is 
+'''Opens steam in the steam account specified by account index, quit_on_switch is
 a bool that decides if the app should be closed after the account switch'''
 
 
@@ -158,6 +160,45 @@ class Config:
 
     def clear_accounts(self):
         self.data[self.accounts_key].clear()
+
+
+class Steam:
+    def get_steam_path(self):
+        steam_path = ''
+        try:
+            hkey = winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER, "Software\Valve\Steam")
+        except:
+            print("cannot locate steam reg files")
+
+        try:
+            steam_path = winreg.QueryValueEx(hkey, "SteamPath")
+        except:
+            print("Unable to locate steam path")
+        return steam_path[0]
+
+    def load_login_users_vdf_file(self):
+        steam_path = self.get_steam_path().replace('/', '\\')
+        vdf_path = os.path.join(steam_path, 'config', 'loginusers.vdf')
+        try:
+            with open(vdf_path, 'r', encoding='utf-8') as vdf_file:
+                return vdf.load(vdf_file)
+        except:
+            print('unable to locate loginusers.vdf in ' + vdf_path)
+
+    def get_login_users_names(self):
+        loginusers_vdf = self.load_login_users_vdf_file()
+        account_names = []
+        for user in loginusers_vdf['users'].values():
+            account_names.append(user['AccountName'])
+        return account_names
+
+    def get_login_users_steamids(self):
+        loginusers_vdf = self.load_login_users_vdf_file()
+        account_steamids = []
+        for steamid in loginusers_vdf['users'].keys():
+            account_steamids.append(steamid)
+        return account_steamids
 
 
 config = Config()
