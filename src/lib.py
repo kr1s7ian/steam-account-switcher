@@ -156,6 +156,9 @@ class Config:
     def remove_account(self, account_index):
         del self.data[self.accounts_key][account_index]
 
+    def clear_accounts(self):
+        self.data[self.accounts_key].clear()
+
 
 config = Config()
 keylistener = KeyListener()
