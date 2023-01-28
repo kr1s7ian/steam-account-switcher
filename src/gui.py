@@ -46,8 +46,9 @@ class Gui(ck.CTk):
 
         for (account_index, account_title) in enumerate(config.get_account_titles()):
             callback = partial(self.account_button_click, account_index)
+            steamid = lib.config.get_account_steamid(account_index)
             user_avatar_path = lib.steam.get_user_avatar_path(
-                lib.config.get_account_steamid(account_index))
+                steamid=steamid)
             self.account_box = AccountBox(
                 self.accounts_frame, width=250, height=75, title=account_title, image_path=user_avatar_path, avatar_size=34, command=callback)
             self.account_box.account_index = account_index
