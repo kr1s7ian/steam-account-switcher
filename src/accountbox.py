@@ -32,7 +32,7 @@ class AccountBox(ck.CTkFrame):
                  avatar_size: int,
                  ** kwargs):
         super().__init__(*args, width=width, height=height, **kwargs)
-        if image_path == None:
+        if image_path == None or image_path == "":
             self.avatar_image = get_placeholder_image(avatar_size)
         else:
             self.avatar_image = ck.CTkImage(
