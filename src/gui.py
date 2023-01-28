@@ -2,6 +2,7 @@ import customtkinter as ck
 from functools import partial
 import os
 import lib
+from accountbox import AccountBox
 from lib import config
 
 ck.set_appearance_mode("dark")
@@ -14,6 +15,11 @@ class Gui(ck.CTk):
         config.set_close_on_switch(not config.get_close_on_switch())
         config.save()
 
+    def clear_accounts_button_press(self):
+        config.clear_accounts()
+        config.save()
+        self.reload_app()
+
     def account_button_click(self, account_index):
         lib.open_steam_in_account(account_index)
 
@@ -23,20 +29,21 @@ class Gui(ck.CTk):
         self.reload_app()
 
     def create_accounts_frame(self):
-        self.accounts_frame = ck.CTkFrame(self.bg)
-        self.accounts_frame.pack(padx=5, pady=5)
+        self.accounts_frame = ck.CTkFrame(self)
+        self.accounts_frame.pack(padx=10, pady=10)
+        if len(config.get_accounts()) == 0:
+            self.accounts_frame.pack_forget()
 
         for (account_index, account_title) in enumerate(config.get_account_titles()):
             callback = partial(self.account_button_click, account_index)
-            self.button = ck.CTkButton(
-                self.accounts_frame, text=account_title, command=callback)
-
-            self.button.account_index = account_index
+            self.account_box = AccountBox(
+                self.accounts_frame, width=250, height=75, title=account_title, avatar_size=34, command=callback)
+            self.account_box.account_index = account_index
             right_click_callback = partial(
                 self.account_button_right_click, account_index)
-            self.button.bind("<ButtonRelease-3>",
-                             command=right_click_callback)
-            self.button.pack(padx=5, pady=5)
+            self.account_box.bind("<ButtonRelease-3>",
+                                  command=right_click_callback)
+            self.account_box.pack(padx=5, pady=5)
         return self.accounts_frame
 
     '''Prompts the user with a dialog asking Username and Title, returns a tuple containg (title, username)'''
@@ -83,28 +90,30 @@ class Gui(ck.CTk):
         super().__init__()
         self.wm_iconbitmap('Assets/Icon.ico')
         self.title("Steam Account Switcher")
-        self.geometry("600x500")
+        self.geometry("300x400")
         self.resizable(0, 0)
 
-        self.bg = ck.CTkFrame(self)
-        self.bg.pack(padx=15, pady=15, fill="both", expand=True)
-
-        self.label = ck.CTkLabel(
-            master=self.bg, text='Steam Account Switcher', font=('Arialbd', 40))
-        self.label.pack(padx=10, pady=10)
-
-        self.frame = ck.CTkFrame(self.bg)
-        self.frame.pack(padx=5, pady=15)
-
-        self.close_on_switch = ck.CTkSwitch(
-            self.frame, text='Close on switch', progress_color=("#326da8", "#326da8"), command=self.close_on_switch)
-        self.close_on_switch.pack(padx=5, pady=5)
-        if config.get_close_on_switch():
-            self.close_on_switch.select()
+        self.topbar = ck.CTkFrame(self, width=450, height=100)
+        self.topbar.pack(side="top", fill="x", expand=False)
 
         self.add_account_button = ck.CTkButton(
-            self.frame, text="+", command=self.add_account_button_press)
-        self.add_account_button.pack(padx=5, pady=5)
+            self.topbar, text="+", command=self.add_account_button_press, width=50)
+        self.add_account_button.grid(padx=10, pady=10, row=0, column=0)
+
+        self.clear_account_button = ck.CTkButton(
+            self.topbar, text="clear", width=80, command=self.clear_accounts_button_press)
+        self.clear_account_button.grid(padx=10, pady=10, row=0, column=1)
+
+        self.import_button = ck.CTkButton(
+            self.topbar, text="import", width=100)
+        self.import_button.grid(padx=10, pady=10, row=0, column=2)
+
+        self.close_on_switch = ck.CTkSwitch(
+            self, text='Close on switch', progress_color=("#326da8", "#326da8"), command=self.close_on_switch)
+        self.close_on_switch.pack(
+            side="bottom", padx=10, pady=10)
+        if config.get_close_on_switch():
+            self.close_on_switch.select()
 
         self.accounts_frame = self.create_accounts_frame()
 
