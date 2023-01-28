@@ -18,8 +18,10 @@ class Gui(ck.CTk):
     def import_accounts_button_press(self):
         lib.config.clear_accounts()
         account_usernames = lib.Steam().get_login_users_names()
-        for name in account_usernames:
-            config.add_account(name, name)
+        account_steamids = lib.Steam().get_login_users_steamids()
+        for (i, name) in enumerate(account_usernames):
+            steamid = account_steamids[i]
+            config.add_account(name, name, steamid)
         config.save()
         self.reload_app()
 
@@ -44,8 +46,10 @@ class Gui(ck.CTk):
 
         for (account_index, account_title) in enumerate(config.get_account_titles()):
             callback = partial(self.account_button_click, account_index)
+            user_avatar_path = lib.steam.get_user_avatar_path(
+                lib.config.get_account_steamid(account_index))
             self.account_box = AccountBox(
-                self.accounts_frame, width=250, height=75, title=account_title, avatar_size=34, command=callback)
+                self.accounts_frame, width=250, height=75, title=account_title, image_path=user_avatar_path, avatar_size=34, command=callback)
             self.account_box.account_index = account_index
             right_click_callback = partial(
                 self.account_button_right_click, account_index)
@@ -85,7 +89,7 @@ class Gui(ck.CTk):
         title = account_data[0]
         username = account_data[1]
 
-        account_index = lib.config.add_account(title, username)
+        account_index = lib.config.add_account(title, username, "")
         lib.config.save()
         callback = partial(self.account_button_click, account_index)
         button = ck.CTkButton(self.accounts_frame,
