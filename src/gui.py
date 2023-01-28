@@ -15,6 +15,14 @@ class Gui(ck.CTk):
         config.set_close_on_switch(not config.get_close_on_switch())
         config.save()
 
+    def import_accounts_button_press(self):
+        lib.config.clear_accounts()
+        account_usernames = lib.Steam().get_login_users_names()
+        for name in account_usernames:
+            config.add_account(name, name)
+        config.save()
+        self.reload_app()
+
     def clear_accounts_button_press(self):
         config.clear_accounts()
         config.save()
@@ -105,7 +113,7 @@ class Gui(ck.CTk):
         self.clear_account_button.grid(padx=10, pady=10, row=0, column=1)
 
         self.import_button = ck.CTkButton(
-            self.topbar, text="import", width=100)
+            self.topbar, text="import", width=100, command=self.import_accounts_button_press)
         self.import_button.grid(padx=10, pady=10, row=0, column=2)
 
         self.close_on_switch = ck.CTkSwitch(
