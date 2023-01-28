@@ -79,7 +79,7 @@ class Config:
     def create_config_file(self):
         with open(self.config_path, 'w') as f:
             empty_config = self.accounts_key + \
-                '=[["title1", "username1"]] \ncloseOnSwitch=true'
+                '=[["title1", "username1", ""]] \ncloseOnSwitch=true'
             f.write(empty_config)
             f.close()
 
@@ -141,7 +141,10 @@ class Config:
     '''Returns account steamid specified by the account_index from the config file'''
 
     def get_account_steamid(self, index):
-        return self.data[self.accounts_key][index][2]
+        if len(self.data[self.accounts_key]) > 0:
+            return self.data[self.accounts_key][index][2]
+        else:
+            return None
 
     '''Sets account title specified by the account_index to new_title'''
 
@@ -211,6 +214,8 @@ class Steam:
         return account_steamids
 
     def get_user_avatar_url(self, steamid):
+        if steamid == None or steamid == "":
+            return None
         with requests.get('https://steamcommunity.com/profiles/{}'.format(steamid)) as r:
             steam_page = BeautifulSoup(r.content, features="html.parser")
         images = steam_page.find(
@@ -219,6 +224,8 @@ class Steam:
         return profile_picture
 
     def download_user_avatar(self, steamid, output):
+        if steamid == None:
+            return None
         avatar_url = self.get_user_avatar_url(steamid)
         avatar_data = requests.get(avatar_url).content
 
@@ -226,6 +233,8 @@ class Steam:
             handler.write(avatar_data)
 
     def get_user_avatar_path(self, steamid):
+        if steamid == None or steamid == "":
+            return None
         user_avatar_path = os.path.join(
             self.account_avatars_path, steamid,).replace('/', '\\') + ".jpg"
         if os.path.exists(user_avatar_path):
