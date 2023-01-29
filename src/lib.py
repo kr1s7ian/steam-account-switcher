@@ -141,10 +141,7 @@ class Config:
     '''Returns account steamid specified by the account_index from the config file'''
 
     def get_account_steamid(self, index):
-        if len(self.data[self.accounts_key]) > 0:
-            return self.data[self.accounts_key][index][2]
-        else:
-            return None
+        return self.data[self.accounts_key][index][2]
 
     '''Sets account title specified by the account_index to new_title'''
 
@@ -220,7 +217,13 @@ class Steam:
             steam_page = BeautifulSoup(r.content, features="html.parser")
         images = steam_page.find(
             'div', attrs={"class": 'playerAvatarAutoSizeInner'})
-        profile_picture = images.findAll('img')[1]['src']
+        try:
+            profile_picture = images.findAll('img')[1]['src']
+        except:
+            try:
+                profile_picture = images.findAll('img')[0]['src']
+            except:
+                profile_picture = None
         return profile_picture
 
     def download_user_avatar(self, steamid, output):
