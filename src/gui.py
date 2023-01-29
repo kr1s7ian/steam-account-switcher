@@ -8,35 +8,53 @@ from lib import config
 ck.set_appearance_mode("dark")
 ck.set_default_color_theme('Assets/Theme.json')
 
+'''Custom tkinter main window class'''
+
 
 class Gui(ck.CTk):
+
+    '''Callback for close on switch widget'''
 
     def close_on_switch(self):
         config.set_close_on_switch(not config.get_close_on_switch())
         config.save()
 
+    '''Callback for import button widget'''
+
     def import_accounts_button_press(self):
         lib.config.clear_accounts()
-        account_usernames = lib.Steam().get_login_users_names()
-        account_steamids = lib.Steam().get_login_users_steamids()
+        account_usernames = lib.steam.get_login_users_names()
+        account_steamids = lib.steam.get_login_users_steamids()
         for (i, name) in enumerate(account_usernames):
             steamid = account_steamids[i]
             config.add_account(name, name, steamid)
         config.save()
-        self.reload_app()
+        self.reload_accounts_frame()
+
+    '''Callback for clear button widget'''
 
     def clear_accounts_button_press(self):
+        # unbinding account buttons
+        for i in range(10):
+            self.unbind(str(i))
         config.clear_accounts()
         config.save()
-        self.reload_app()
+        self.reload_accounts_frame()
 
-    def account_button_click(self, account_index):
-        lib.open_steam_in_account(account_index)
+    '''Callback for accountbox button widget'''
+
+    def account_button_click(self, account_index=None, event=None):
+        lib.steam.open_steam_in_account(
+            account_index, lib.config.get_close_on_switch())
+
+    '''Callback for accountbox button right click'''
 
     def account_button_right_click(self, account_index, event):
         lib.config.remove_account(account_index)
         lib.config.save()
-        self.reload_app()
+        self.reload_accounts_frame()
+
+    '''Method that regenerates accounts_frame with all accountboxes present in the config'''
 
     def create_accounts_frame(self):
         self.accounts_frame = ck.CTkFrame(self)
@@ -57,13 +75,15 @@ class Gui(ck.CTk):
             self.account_box.bind("<ButtonRelease-3>",
                                   command=right_click_callback)
             self.account_box.pack(padx=5, pady=5)
+
+            key_number = account_index + 1
+            if key_number < 10:
+                self.bind(str(key_number), callback)
         return self.accounts_frame
 
     '''Prompts the user with a dialog asking Username and Title, returns a tuple containg (title, username)'''
 
     def new_account_dialog(self):
-        lib.keylistener.stop()
-
         username_dialog = ck.CTkInputDialog(
             text="Insert Account Username", title='Add Account')
         username = username_dialog.get_input()
@@ -75,12 +95,13 @@ class Gui(ck.CTk):
         if title == None:
             return None
 
-        lib.keylistener.start()
         return (title, username)
 
-    def reload_app(self):
+    '''Reloads the accounts_frame'''
+
+    def reload_accounts_frame(self):
         self.accounts_frame.destroy()
-        self.acoounts_frame = self.create_accounts_frame()
+        self.accounts_frame = self.create_accounts_frame()
 
     def add_account_button_press(self):
         print("adding new account")
@@ -97,7 +118,9 @@ class Gui(ck.CTk):
                               text=title, command=callback)
         button.pack(padx=5, pady=5)
         button.account_index = account_index
-        self.reload_app()
+        self.reload_accounts_frame()
+
+    '''Main window setup'''
 
     def __init__(self):
         super().__init__()
@@ -129,9 +152,5 @@ class Gui(ck.CTk):
             self.close_on_switch.select()
 
         self.accounts_frame = self.create_accounts_frame()
-
-        self.bind("<Unmap>", lambda _: lib.keylistener.stop())
-        self.bind("<Map>", lambda _: lib.keylistener.start())
-
         self.mainloop()
         lib.terminate_app()
