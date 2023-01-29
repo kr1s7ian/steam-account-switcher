@@ -7,56 +7,12 @@ import requests
 from bs4 import BeautifulSoup
 import vdf
 import winreg
-from keylistener import KeyListener
 
-'''Closes the steam process using taskkill'''
-
-
-def kill_steam():
-    subprocess.run(["taskkill.exe", "/F", "/IM", "steam.exe"],
-                   capture_output=False, shell=True)
-
-
-'''Open steam process using start'''
-
-
-def open_steam():
-    subprocess.call("start steam://open/main",
-                    creationflags=subprocess.DETACHED_PROCESS, shell=True)
-
-
-'''Login in steam account with username parameter using registers red add'''
-
-
-def login_steam(account_index):
-    global config
-    username = config.get_account_usernames()[account_index]
-    print("logging in " + username + " steam account")
-    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d ' +
-                    username + ' /f', creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
-    subprocess.call('reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f',
-                    creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
-
-
-'''Closes all processes related to the app'''
+'''Closes the program'''
 
 
 def terminate_app():
-    keylistener.kill()
     os._exit(0)
-
-
-'''Opens steam in the steam account specified by account index, quit_on_switch is
-a bool that decides if the app should be closed after the account switch'''
-
-
-def open_steam_in_account(account_index):
-    kill_steam()
-    login_steam(account_index)
-    open_steam()
-
-    if config.get_close_on_switch():
-        terminate_app()
 
 
 '''Config class that contains all config related logic and variables'''
@@ -83,6 +39,8 @@ class Config:
             f.write(empty_config)
             f.close()
 
+    '''Setup config class'''
+
     def __init__(self):
         self.accounts_key = 'accounts'
         self.config_path = "config.toml"
@@ -92,16 +50,17 @@ class Config:
             self.create_config_file()
             self.data = self.load()
 
+    '''Returns close_on_switch bool from config'''
+
     def get_close_on_switch(self):
         return self.data["closeOnSwitch"]
 
-    def toggle_close_on_switch(self):
-        self.set_close_on_switch(not self.get_close_on_switch())
+    '''Sets close_on_switch bool to memory config'''
 
     def set_close_on_switch(self, new_value):
         self.data["closeOnSwitch"] = new_value
 
-    '''Returns all accounts (an array of a list which contains account usernames and titles)'''
+    '''Returns all the account entries in the config'''
 
     def get_accounts(self):
         return self.data[self.accounts_key]
@@ -123,6 +82,7 @@ class Config:
             # index 0 is titles, index 1 is usernames
             titles.append(account[0])
         return titles
+
     '''Returns account object that contains account title and username specified by the account_index from the config file'''
 
     def get_account(self, index):
@@ -169,9 +129,16 @@ class Config:
         self.data[self.accounts_key].clear()
 
 
+'''Steam class containg all steam lib functions'''
+
+
 class Steam:
+    '''Setup Steam class'''
+
     def __init__(self):
         self.account_avatars_path = 'Assets/account_avatars'
+
+    '''Returns steam path on the current machine, if not found returns None'''
 
     def get_steam_path(self):
         steam_path = ''
@@ -182,10 +149,45 @@ class Steam:
             print("cannot locate steam reg files")
 
         try:
-            steam_path = winreg.QueryValueEx(hkey, "SteamPath")
+            steam_path = winreg.QueryValueEx(hkey, "SteamPath")[0]
         except:
+            steam_path = None
             print("Unable to locate steam path")
-        return steam_path[0]
+        return steam_path
+
+    '''Kills the steam process on the machine'''
+
+    def kill_steam(self):
+        subprocess.run(["taskkill.exe", "/F", "/IM", "steam.exe"],
+                       capture_output=False, shell=True)
+    '''Launches the steam process on the machine'''
+
+    def open_steam(self):
+        subprocess.call("start steam://open/main",
+                        creationflags=subprocess.DETACHED_PROCESS, shell=True)
+
+    '''Logins in the user specified by account index of config file'''
+
+    def login_steam(self, account_index):
+        global config
+        username = config.get_account_usernames()[account_index]
+        print("logging in " + username + " steam account")
+        subprocess.call('reg add "HKCU\Software\Valve\Steam" /v AutoLoginUser /t REG_SZ /d ' +
+                        username + ' /f', creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
+        subprocess.call('reg add "HKCU\Software\Valve\Steam" /v RememberPassword /t REG_DWORD /d 1 /f',
+                        creationflags=subprocess.CREATE_NO_WINDOW, shell=True)
+
+    '''Kills Steam process and logs into the account specified by account_index before launching steam.
+    closes application based on close_on_switch bool'''
+
+    def open_steam_in_account(self, account_index, close_on_switch: bool):
+        self.kill_steam()
+        self.login_steam(account_index)
+        self.open_steam()
+        if close_on_switch:
+            terminate_app()
+
+    '''Returns object containing all the steam logins information by parsing loginusers.vdf'''
 
     def load_login_users_vdf_file(self):
         steam_path = self.get_steam_path().replace('/', '\\')
@@ -196,6 +198,8 @@ class Steam:
         except:
             print('unable to locate loginusers.vdf in ' + vdf_path)
 
+    '''Returns login usernames from loginusers.vdf file'''
+
     def get_login_users_names(self):
         loginusers_vdf = self.load_login_users_vdf_file()
         account_names = []
@@ -203,12 +207,16 @@ class Steam:
             account_names.append(user['AccountName'])
         return account_names
 
+    '''Returns login steamids from loginusers.vdf file'''
+
     def get_login_users_steamids(self):
         loginusers_vdf = self.load_login_users_vdf_file()
         account_steamids = []
         for steamid in loginusers_vdf['users'].keys():
             account_steamids.append(steamid)
         return account_steamids
+
+    '''Returns url of steam account avatar by steamid'''
 
     def get_user_avatar_url(self, steamid):
         if steamid == None or steamid == "":
@@ -226,6 +234,8 @@ class Steam:
                 profile_picture = None
         return profile_picture
 
+    '''Downloads steam account avatar by steamid, and saves it to output path'''
+
     def download_user_avatar(self, steamid, output):
         if steamid == None:
             return None
@@ -236,6 +246,9 @@ class Steam:
 
         with open(output, 'wb') as handler:
             handler.write(avatar_data)
+
+    '''Returns steam account avatar path by steamid if found,
+     if not found it downloads the avatar image and returns it's path'''
 
     def get_user_avatar_path(self, steamid):
         if steamid == None or steamid == "":
@@ -251,4 +264,3 @@ class Steam:
 
 config = Config()
 steam = Steam()
-keylistener = KeyListener()
