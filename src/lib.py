@@ -226,6 +226,8 @@ class Steam:
     def download_user_avatar(self, steamid, output):
         if steamid == None:
             return None
+        if not os.path.exists(self.account_avatars_path):
+            os.makedirs(self.account_avatars_path)
         avatar_url = self.get_user_avatar_url(steamid)
         avatar_data = requests.get(avatar_url).content
 
