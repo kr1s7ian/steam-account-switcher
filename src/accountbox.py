@@ -5,7 +5,7 @@ from PIL import PngImagePlugin
 
 
 def get_placeholder_image(size):
-    return ck.CTkImage(Image.open('Assets/Icon.Ico'), size=(size, size))
+    return ck.CTkImage(Image.open('Assets/Icon.ico'), size=(size, size))
 
 
 class AccountBox(ck.CTkFrame):
